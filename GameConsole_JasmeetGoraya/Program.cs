@@ -1,6 +1,5 @@
-﻿using System;  
+﻿using System;
 using System.Threading.Tasks;
-
 
 namespace GameConsole_JasmeetGoraya
 {
@@ -9,23 +8,23 @@ namespace GameConsole_JasmeetGoraya
         static void Main(string[] args)
         {
             bool isRunning = true;
-            while (isRunning) {
-            Console.Clear();
 
+            while (isRunning)
+            {
+                Console.Clear();
 
-            Console.WriteLine("----- game console -----");
-            Task.Delay(500).Wait();
-            Console.WriteLine("Press one to play rock paper scissors");
-            Task.Delay(500).Wait();
-            Console.WriteLine("Press two to play naughts and crosses"); 
-            Task.Delay(500).Wait();
-            Console.WriteLine("Press three to return back to home screen");
-            Task.Delay(500).Wait();
-            Console.WriteLine("Press four to exit the game console");
+                Console.WriteLine("----- game console -----");
+                Task.Delay(500).Wait();
+                Console.WriteLine("Press one to play rock paper scissors");
+                Task.Delay(500).Wait();
+                Console.WriteLine("Press two to play naughts and crosses");
+                Task.Delay(500).Wait();
+                Console.WriteLine("Press three to return back to home screen");
+                Task.Delay(500).Wait();
+                Console.WriteLine("Press four to exit the game console");
 
-            string userInput = Console.ReadLine() ?? string.Empty;
-
-            string userInputLower = userInput.ToLower();
+                string userInput = Console.ReadLine() ?? string.Empty;
+                string userInputLower = userInput.ToLower();
 
                 switch (userInputLower)
                 {
@@ -35,23 +34,27 @@ namespace GameConsole_JasmeetGoraya
                         Task.Delay(1000).Wait();
                         Play.rps();
                         break;
+
                     case "2":
                     case "two":
                         Console.WriteLine("You have chosen to play naughts and crosses");
                         Task.Delay(1000).Wait();
-                        Play.rps();
+                        Play.NaughtsAndCrosses(); 
                         break;
+
                     case "3":
                     case "three":
                         Console.WriteLine("Returning back to home screen...");
                         Task.Delay(1000).Wait();
                         break;
+
                     case "4":
                     case "four":
                         Console.WriteLine("Exiting the game console...");
                         Task.Delay(1000).Wait();
                         isRunning = false;
                         break;
+
                     default:
                         Console.WriteLine("Invalid input, please try again.");
                         Task.Delay(1000).Wait();
@@ -60,7 +63,92 @@ namespace GameConsole_JasmeetGoraya
             }
         }
     }
-}
+
+    class Play
+    {
+        public static void rps()
+        {
+            Console.Clear();
+            Console.WriteLine("Welcome to rock paper scissors!");
+
+            int rock = 1;
+            int paper = 2;
+            int scissors = 3;
+
+            Random rng = new Random();
+            int computerChoice = rng.Next(0, 3);
+
+          
+
+            Console.WriteLine("Please enter any of the following:");
+            Console.WriteLine("press one for rock");
+            Console.WriteLine("press two for paper"); 
+            Console.WriteLine("press three for scissors");
+            string userInput = Console.ReadLine() ?? string.Empty;
+
+            if (userInput == "1" || userInput.ToLower() == "one")
+            {
+                Console.WriteLine("You chose rock");
+                if (computerChoice == rock)
+                {
+                    Console.WriteLine("The computer chose rock, it's a tie!");
+                }
+                else if (computerChoice == paper)
+                {
+                    Console.WriteLine("The computer chose paper, you lose!");
+                }
+                else
+                {
+                    Console.WriteLine("The computer chose scissors, you win!");
+                }
+            }
+            else if (userInput == "2" || userInput.ToLower() == "two")
+            {
+                Console.WriteLine("You chose paper");
+                if (computerChoice == rock)
+                {
+                    Console.WriteLine("The computer chose rock, you win!");
+                }
+                else if (computerChoice == paper)
+                {
+                    Console.WriteLine("The computer chose paper, it's a tie!");
+                }
+                else
+                {
+                    Console.WriteLine("The computer chose scissors, you lose!");
+                }
+            }
+            else if (userInput == "3" || userInput.ToLower() == "three")
+            {
+                Console.WriteLine("You chose scissors");
+                if (computerChoice == rock)
+                {
+                    Console.WriteLine("The computer chose rock, you lose!");
+                }
+                else if (computerChoice == paper)
+                {
+                    Console.WriteLine("The computer chose paper, you win!");
+                }
+                else
+                {
+                    Console.WriteLine("The computer chose scissors, it's a tie!");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Invalid input, please try again.");
+            }
 
 
 
+            Console.WriteLine("Press Enter to return to menu.");
+            Console.ReadLine();
+
+           
+        }
+        
+        public static void NaughtsAndCrosses()
+        {
+            // todo: implement naughts and crosses game
+        }
+    }
