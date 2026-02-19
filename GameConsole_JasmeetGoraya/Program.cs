@@ -13,6 +13,8 @@ namespace GameConsole_JasmeetGoraya
             {
                 Console.Clear();
 
+
+
                 Console.WriteLine("----- game console -----");
                 Task.Delay(500).Wait();
                 Console.WriteLine("Press one to play rock paper scissors");
@@ -74,6 +76,10 @@ namespace GameConsole_JasmeetGoraya
             int rock = 1;
             int paper = 2;
             int scissors = 3;
+
+            Console.WriteLine("Please enter your name:");
+            string playerName = Console.ReadLine() ?? string.Empty;
+
 
             int computerWin = 0;
             int playerWin = 0;
