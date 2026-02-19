@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace GameConsole_JasmeetGoraya
@@ -178,5 +179,23 @@ namespace GameConsole_JasmeetGoraya
         public static void NaughtsAndCrosses()
         {
             // todo: implement naughts and crosses game
+
+           Console.WriteLine ("Welcome to naughts and crosses!");
+
+            string[,] board = new string[,]
+                {
+                    { "1", "2", "3" },
+                    { "4", "5", "6" },
+                    { "7", "8", "9" }
+                };
+
+            Console.WriteLine(board[0, 0] + " | " + board[0, 1] + " | " + board[0, 2]);
+            Console.WriteLine("--+---+--");
+            Console.WriteLine(board[1, 0] + " | " + board[1, 1] + " | " + board[1, 2]);
+            Console.WriteLine("--+---+--");
+            Console.WriteLine(board[2, 0] + " | " + board[2, 1] + " | " + board[2, 2]);
+
         }
+
     }
+}
