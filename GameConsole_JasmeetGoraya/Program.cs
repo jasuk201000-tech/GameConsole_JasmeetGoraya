@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
@@ -42,7 +43,7 @@ namespace GameConsole_JasmeetGoraya
                     case "two":
                         Console.WriteLine("You have chosen to play naughts and crosses");
                         Task.Delay(1000).Wait();
-                        Play.NaughtsAndCrosses(); 
+                        Play.NaughtsAndCrosses();
                         break;
 
                     case "3":
@@ -89,11 +90,11 @@ namespace GameConsole_JasmeetGoraya
             Random rng = new Random();
             int computerChoice = rng.Next(0, 3);
 
-          
+
 
             Console.WriteLine("Please enter any of the following:");
             Console.WriteLine("press one for rock");
-            Console.WriteLine("press two for paper"); 
+            Console.WriteLine("press two for paper");
             Console.WriteLine("press three for scissors");
             string userInput = Console.ReadLine() ?? string.Empty;
 
@@ -173,15 +174,18 @@ namespace GameConsole_JasmeetGoraya
             Console.WriteLine("Press Enter to return to menu.");
             Console.ReadLine();
 
-           
+
         }
-        
+
         public static void NaughtsAndCrosses()
         {
-            // todo: implement naughts and crosses game
+            // todo: implement naughts and crosses game\
 
-           Console.WriteLine ("Welcome to naughts and crosses!");
 
+
+            Console.WriteLine("Welcome to naughts and crosses!");
+            private static void Create_Board()
+        {
             string[,] board = new string[,]
                 {
                     { "1", "2", "3" },
@@ -194,8 +198,48 @@ namespace GameConsole_JasmeetGoraya
             Console.WriteLine(board[1, 0] + " | " + board[1, 1] + " | " + board[1, 2]);
             Console.WriteLine("--+---+--");
             Console.WriteLine(board[2, 0] + " | " + board[2, 1] + " | " + board[2, 2]);
+        }
+       private static bool Place_Move(string[,] board, string move, char currentPlayer)
+        {
+            if (!int.TryParse(move, out int pos)) return false;
+            if (pos < 1 || pos > 9) return false;
 
+            int row = (pos - 1) / 3;
+            int col = (pos - 1) % 3;
+
+            if (board[row, col] == "X" || board[row, col] == "O") return false;
+
+            board[row, col] = currentPlayer.ToString();
+            return true;
         }
 
+        private static bool Check_Winner(string[,] board, char player)
+        {
+            string p = player.ToString();
+
+            // rows
+            for (int r = 0; r < 3; r++)
+                if (board[r, 0] == p && board[r, 1] == p && board[r, 2] == p) return true;
+
+            // cols
+            for (int c = 0; c < 3; c++)
+                if (board[0, c] == p && board[1, c] == p && board[2, c] == p) return true;
+
+            // diagonals
+            if (board[0, 0] == p && board[1, 1] == p && board[2, 2] == p) return true;
+            if (board[0, 2] == p && board[1, 1] == p && board[2, 0] == p) return true;
+
+            return false;
+        }
+
+        private static bool Check_Draw(string[,] board)
+        {
+            for (int r = 0; r < 3; r++)
+                for (int c = 0; c < 3; c++)
+                    if (board[r, c] != "X" && board[r, c] != "O")
+                        return false;
+
+            return true;
+        }
     }
 }
