@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace GameConsole_JasmeetGoraya
@@ -14,8 +12,6 @@ namespace GameConsole_JasmeetGoraya
             while (isRunning)
             {
                 Console.Clear();
-
-
 
                 Console.WriteLine("----- game console -----");
                 Task.Delay(500).Wait();
@@ -82,15 +78,14 @@ namespace GameConsole_JasmeetGoraya
             Console.WriteLine("Please enter your name:");
             string playerName = Console.ReadLine() ?? string.Empty;
 
-
             int computerWin = 0;
             int playerWin = 0;
             int ties = 0;
 
             Random rng = new Random();
-            int computerChoice = rng.Next(0, 3);
 
-
+            // FIX: must be 1-3 not 0-2
+            int computerChoice = rng.Next(1, 4);
 
             Console.WriteLine("Please enter any of the following:");
             Console.WriteLine("press one for rock");
@@ -101,105 +96,111 @@ namespace GameConsole_JasmeetGoraya
             if (userInput == "1" || userInput.ToLower() == "one")
             {
                 Console.WriteLine("You chose rock");
-                if (computerChoice == rock)
-                {
-                    Console.WriteLine("The computer chose rock, it's a tie!");
-                    ties = ties + 1;
-                    Console.WriteLine("Computer: " + computerWin + "Player: " + playerWin + "Ties: " + ties);
-                }
-                else if (computerChoice == paper)
-                {
-                    Console.WriteLine("The computer chose paper, you lose!");
-                    computerWin = computerWin + 1;
-                    Console.WriteLine("Computer: " + computerWin + "Player: " + playerWin + "Ties: " + ties);
-                }
-                else
-                {
-                    Console.WriteLine("The computer chose scissors, you win!");
-                    playerWin = playerWin + 1;
-                    Console.WriteLine("Computer: " + computerWin + "Player: " + playerWin + "Ties: " + ties);
-                }
+                if (computerChoice == rock) { Console.WriteLine("The computer chose rock, it's a tie!"); ties++; }
+                else if (computerChoice == paper) { Console.WriteLine("The computer chose paper, you lose!"); computerWin++; }
+                else { Console.WriteLine("The computer chose scissors, you win!"); playerWin++; }
             }
             else if (userInput == "2" || userInput.ToLower() == "two")
             {
                 Console.WriteLine("You chose paper");
-                if (computerChoice == rock)
-                {
-                    Console.WriteLine("The computer chose rock, you win!");
-                    ties = ties + 1;
-                    Console.WriteLine("Computer: " + computerWin + "Player: " + playerWin + "Ties: " + ties);
-                }
-                else if (computerChoice == paper)
-                {
-                    Console.WriteLine("The computer chose paper, it's a tie!");
-                    computerWin = computerWin + 1;
-                    Console.WriteLine("Computer: " + computerWin + "Player: " + playerWin + "Ties: " + ties);
-                }
-                else
-                {
-                    Console.WriteLine("The computer chose scissors, you lose!");
-                    computerWin = computerWin + 1;
-                    Console.WriteLine("Computer: " + computerWin + "Player: " + playerWin + "Ties: " + ties);
-                }
+                if (computerChoice == rock) { Console.WriteLine("The computer chose rock, you win!"); playerWin++; }
+                else if (computerChoice == paper) { Console.WriteLine("The computer chose paper, it's a tie!"); ties++; }
+                else { Console.WriteLine("The computer chose scissors, you lose!"); computerWin++; }
             }
             else if (userInput == "3" || userInput.ToLower() == "three")
             {
                 Console.WriteLine("You chose scissors");
-                if (computerChoice == rock)
-                {
-                    Console.WriteLine("The computer chose rock, you lose!");
-                    ties = ties + 1;
-                    Console.WriteLine("Computer: " + computerWin + "Player: " + playerWin + "Ties: " + ties);
-                }
-                else if (computerChoice == paper)
-                {
-                    Console.WriteLine("The computer chose paper, you win!");
-                    computerWin = computerWin + 1;
-                    Console.WriteLine("Computer: " + computerWin + "Player: " + playerWin + "Ties: " + ties);
-                }
-                else
-                {
-                    Console.WriteLine("The computer chose scissors, it's a tie!");
-                    computerWin = computerWin + 1;
-                    Console.WriteLine("Computer: " + computerWin + "Player: " + playerWin + "Ties: " + ties);
-                }
+                if (computerChoice == rock) { Console.WriteLine("The computer chose rock, you lose!"); computerWin++; }
+                else if (computerChoice == paper) { Console.WriteLine("The computer chose paper, you win!"); playerWin++; }
+                else { Console.WriteLine("The computer chose scissors, it's a tie!"); ties++; }
             }
             else
             {
                 Console.WriteLine("Invalid input, please try again.");
             }
 
-
-
+            Console.WriteLine("Computer: " + computerWin + " Player: " + playerWin + " Ties: " + ties);
             Console.WriteLine("Press Enter to return to menu.");
             Console.ReadLine();
-
-
         }
 
         public static void NaughtsAndCrosses()
         {
-            // todo: implement naughts and crosses game\
+            Console.Clear();
+            Console.WriteLine("welcome to naughts and crosses");
+            Task.Delay(500).Wait();
 
+            string[,] board = Create_Board();
 
+            char currentPlayer = 'X';
+            bool gameOver = false;
 
-            Console.WriteLine("Welcome to naughts and crosses!");
-            private static void Create_Board()
-        {
-            string[,] board = new string[,]
+            while (!gameOver)
+            {
+                Console.Clear();
+                Console.WriteLine("Current board:");
+                Display_Board(board);
+
+                Console.WriteLine();
+                Console.WriteLine("Player " + currentPlayer + ", enter your move (1-9):");
+                string move = Console.ReadLine() ?? string.Empty;
+
+                if (Place_Move(board, move, currentPlayer))
                 {
-                    { "1", "2", "3" },
-                    { "4", "5", "6" },
-                    { "7", "8", "9" }
-                };
+                    if (Check_Winner(board, currentPlayer))
+                    {
+                        Console.Clear();
+                        Console.WriteLine("Current board:");
+                        Display_Board(board);
+                        Console.WriteLine("Player " + currentPlayer + " wins!");
+                        gameOver = true;
+                    }
+                    else if (Check_Draw(board))
+                    {
+                        Console.Clear();
+                        Console.WriteLine("Current board:");
+                        Display_Board(board);
+                        Console.WriteLine("It's a draw!");
+                        gameOver = true;
+                    }
+                    else
+                    {
+                        currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Invalid move, please try again.");
+                    Task.Delay(1000).Wait();
+                }
+            }
 
+            Console.WriteLine("Press Enter to return to menu.");
+            Console.ReadLine();
+        }
+
+        // ✅ these must be OUTSIDE NaughtsAndCrosses (class methods)
+
+        private static string[,] Create_Board()
+        {
+            return new string[,]
+            {
+                { "1", "2", "3" },
+                { "4", "5", "6" },
+                { "7", "8", "9" }
+            };
+        }
+
+        private static void Display_Board(string[,] board)
+        {
             Console.WriteLine(board[0, 0] + " | " + board[0, 1] + " | " + board[0, 2]);
             Console.WriteLine("--+---+--");
             Console.WriteLine(board[1, 0] + " | " + board[1, 1] + " | " + board[1, 2]);
             Console.WriteLine("--+---+--");
             Console.WriteLine(board[2, 0] + " | " + board[2, 1] + " | " + board[2, 2]);
         }
-       private static bool Place_Move(string[,] board, string move, char currentPlayer)
+
+        private static bool Place_Move(string[,] board, string move, char currentPlayer)
         {
             if (!int.TryParse(move, out int pos)) return false;
             if (pos < 1 || pos > 9) return false;
@@ -217,15 +218,12 @@ namespace GameConsole_JasmeetGoraya
         {
             string p = player.ToString();
 
-            // rows
             for (int r = 0; r < 3; r++)
                 if (board[r, 0] == p && board[r, 1] == p && board[r, 2] == p) return true;
 
-            // cols
             for (int c = 0; c < 3; c++)
                 if (board[0, c] == p && board[1, c] == p && board[2, c] == p) return true;
 
-            // diagonals
             if (board[0, 0] == p && board[1, 1] == p && board[2, 2] == p) return true;
             if (board[0, 2] == p && board[1, 1] == p && board[2, 0] == p) return true;
 
