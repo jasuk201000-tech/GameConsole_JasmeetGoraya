@@ -81,10 +81,11 @@ namespace GameConsole_JasmeetGoraya
             int computerWin = 0;
             int playerWin = 0;
             int ties = 0;
+            bool playAgain = true;
 
             Random rng = new Random();
 
-            // FIX: must be 1-3 not 0-2
+        
             int computerChoice = rng.Next(1, 4);
 
             Console.WriteLine("Please enter any of the following:");
@@ -93,6 +94,7 @@ namespace GameConsole_JasmeetGoraya
             Console.WriteLine("press three for scissors");
             string userInput = Console.ReadLine() ?? string.Empty;
 
+            
             if (userInput == "1" || userInput.ToLower() == "one")
             {
                 Console.WriteLine("You chose rock");
@@ -130,56 +132,66 @@ namespace GameConsole_JasmeetGoraya
             Console.WriteLine("welcome to naughts and crosses");
             Task.Delay(500).Wait();
 
+            bool keepPlaying = true;
+
             string[,] board = Create_Board();
 
-            char currentPlayer = 'X';
-            bool gameOver = false;
 
-            while (!gameOver)
+            while (keepPlaying)
             {
-                Console.Clear();
-                Console.WriteLine("Current board:");
-                Display_Board(board);
-
-                Console.WriteLine();
-                Console.WriteLine("Player " + currentPlayer + ", enter your move (1-9):");
-                string move = Console.ReadLine() ?? string.Empty;
-
-                if (Place_Move(board, move, currentPlayer))
+                char currentPlayer = 'X';
+                string[,] board = Create_Board();
+                bool gameOver = false;
+                while (!gameOver)
                 {
-                    if (Check_Winner(board, currentPlayer))
+                    Console.Clear();
+                    Console.WriteLine("Current board:");
+                    Display_Board(board);
+
+                    Console.WriteLine();
+                    Console.WriteLine("Player " + currentPlayer + ", enter your move (1-9):");
+                    string move = Console.ReadLine() ?? string.Empty;
+
+                    if (Place_Move(board, move, currentPlayer))
                     {
-                        Console.Clear();
-                        Console.WriteLine("Current board:");
-                        Display_Board(board);
-                        Console.WriteLine("Player " + currentPlayer + " wins!");
-                        gameOver = true;
-                    }
-                    else if (Check_Draw(board))
-                    {
-                        Console.Clear();
-                        Console.WriteLine("Current board:");
-                        Display_Board(board);
-                        Console.WriteLine("It's a draw!");
-                        gameOver = true;
+                        if (Check_Winner(board, currentPlayer))
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Current board:");
+                            Display_Board(board);
+                            Console.WriteLine("Player " + currentPlayer + " wins!");
+                            gameOver = true;
+                        }
+                        else if (Check_Draw(board))
+                        {
+                            Console.Clear();
+                            Console.WriteLine("Current board:");
+                            Display_Board(board);
+                            Console.WriteLine("It's a draw!");
+                            gameOver = true;
+                        }
+                        else
+                        {
+                            currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
+                        }
                     }
                     else
                     {
-                        currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
+                        Console.WriteLine("Invalid move, please try again.");
+                        Task.Delay(1000).Wait();
                     }
                 }
-                else
-                {
-                    Console.WriteLine("Invalid move, please try again.");
-                    Task.Delay(1000).Wait();
-                }
             }
-
-            Console.WriteLine("Press Enter to return to menu.");
-            Console.ReadLine();
         }
 
-        // ✅ these must be OUTSIDE NaughtsAndCrosses (class methods)
+        private static string ReturnToMenu()
+        {
+            Console.WriteLine("Press Enter to return to menu.");
+            Console.ReadLine();
+            return string.Empty;
+        }
+
+
 
         private static string[,] Create_Board()
         {
