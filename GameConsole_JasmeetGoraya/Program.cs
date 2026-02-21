@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace GameConsole_JasmeetGoraya
 {
     class Program
     {
+        // main menu for the game console, allows the user to choose which game they want to play and also allows them to exit the game console
         static void Main(string[] args)
         {
             bool isRunning = true;
@@ -25,16 +24,15 @@ namespace GameConsole_JasmeetGoraya
                 Task.Delay(500).Wait();
                 Console.WriteLine("Press four to exit the game console");
 
-                string userInput = Console.ReadLine() ?? string.Empty;
-                string userInputLower = userInput.ToLower();
+                string userInput = (Console.ReadLine() ?? string.Empty).Trim().ToLower();
 
-                switch (userInputLower)
+                switch (userInput)
                 {
                     case "1":
                     case "one":
                         Console.WriteLine("You have chosen to play rock paper scissors");
                         Task.Delay(1000).Wait();
-                        Play.rps();
+                        Play.Rps();
                         break;
 
                     case "2":
@@ -68,14 +66,26 @@ namespace GameConsole_JasmeetGoraya
 
     class Play
     {
-        public static void rps()
+        
+        private static bool PlayAgain()
+        {
+            while (true)
+            {
+                Console.Write("Do you want to play again? (y/n): ");
+                string input = (Console.ReadLine() ?? "").Trim().ToLower();
+
+                if (input == "y" || input == "yes") return true;
+                if (input == "n" || input == "no") return false;
+
+                Console.WriteLine("Invalid input. Please type y or n.");
+            }
+        }
+
+        
+        public static void Rps()
         {
             Console.Clear();
             Console.WriteLine("Welcome to rock paper scissors!");
-
-            int rock = 1;
-            int paper = 2;
-            int scissors = 3;
 
             Console.WriteLine("Please enter your name:");
             string playerName = Console.ReadLine() ?? string.Empty;
@@ -83,56 +93,69 @@ namespace GameConsole_JasmeetGoraya
             int computerWin = 0;
             int playerWin = 0;
             int ties = 0;
-            bool playAgain = true;
 
-            
+            Random rng = new Random();
 
-        Random rng = new Random();
-
-        
-            int computerChoice = rng.Next(1, 4);
-
-            Console.WriteLine("Please enter any of the following:");
-            Console.WriteLine("press one for rock");
-            Console.WriteLine("press two for paper");
-            Console.WriteLine("press three for scissors");
-            string userInput = Console.ReadLine() ?? string.Empty;
-
-            
-            if (userInput == "1" || userInput.ToLower() == "one")
+            bool keepPlaying = true;
+            while (keepPlaying)
             {
-                Console.WriteLine("You chose rock");
-                if (computerChoice == rock) { Console.WriteLine("The computer chose rock, it's a tie!"); ties++; }
-                else if (computerChoice == paper) { Console.WriteLine("The computer chose paper, you lose!"); computerWin++; }
-                else { Console.WriteLine("The computer chose scissors, you win!"); playerWin++; }
-                PlayAgain();
-            }
-            else if (userInput == "2" || userInput.ToLower() == "two")
-            {
-                Console.WriteLine("You chose paper");
-                if (computerChoice == rock) { Console.WriteLine("The computer chose rock, you win!"); playerWin++; }
-                else if (computerChoice == paper) { Console.WriteLine("The computer chose paper, it's a tie!"); ties++; }
-                else { Console.WriteLine("The computer chose scissors, you lose!"); computerWin++; }
-                PlayAgain();
-            }
-            else if (userInput == "3" || userInput.ToLower() == "three")
-            {
-                Console.WriteLine("You chose scissors");
-                if (computerChoice == rock) { Console.WriteLine("The computer chose rock, you lose!"); computerWin++; }
-                else if (computerChoice == paper) { Console.WriteLine("The computer chose paper, you win!"); playerWin++; }
-                else { Console.WriteLine("The computer chose scissors, it's a tie!"); ties++; }
-                PlayAgain();
-            }
-            else
-            {
-                Console.WriteLine("Invalid input, please try again.");
+                Console.Clear();
+                Console.WriteLine($"Player: {playerName}");
+                Console.WriteLine($"Score -> Computer: {computerWin}  You: {playerWin}  Ties: {ties}");
+                Console.WriteLine();
+                Console.WriteLine("Please enter any of the following:");
+                Console.WriteLine("press one for rock");
+                Console.WriteLine("press two for paper");
+                Console.WriteLine("press three for scissors");
+
+                int computerChoice = rng.Next(1, 4);
+
+                string userInput = (Console.ReadLine() ?? string.Empty).Trim().ToLower();
+
+                int playerChoice;
+                if (userInput == "1" || userInput == "one") playerChoice = 1;
+                else if (userInput == "2" || userInput == "two") playerChoice = 2;
+                else if (userInput == "3" || userInput == "three") playerChoice = 3;
+                else
+                {
+                    Console.WriteLine("Invalid input, please try again.");
+                    Task.Delay(1000).Wait();
+                    continue;
+                }
+
+                Console.WriteLine();
+                Console.WriteLine("You chose " + (playerChoice == 1 ? "rock" : playerChoice == 2 ? "paper" : "scissors"));
+                Console.WriteLine("Computer chose " + (computerChoice == 1 ? "rock" : computerChoice == 2 ? "paper" : "scissors"));
+
+                if (playerChoice == computerChoice)
+                {
+                    Console.WriteLine("It's a tie!");
+                    ties++;
+                }
+                else if (
+                    (playerChoice == 1 && computerChoice == 3) ||
+                    (playerChoice == 2 && computerChoice == 1) ||
+                    (playerChoice == 3 && computerChoice == 2)
+                )
+                {
+                    Console.WriteLine("You win!");
+                    playerWin++;
+                }
+                else
+                {
+                    Console.WriteLine("You lose!");
+                    computerWin++;
+                }
+
+                Console.WriteLine();
+                keepPlaying = PlayAgain();
             }
 
-            Console.WriteLine("Computer: " + computerWin + " Player: " + playerWin + " Ties: " + ties);
-            Console.WriteLine("Press Enter to return to menu.");
-            Console.ReadLine();
+            Console.WriteLine("Returning to menu...");
+            Task.Delay(1000).Wait();
         }
 
+        
         public static void NaughtsAndCrosses()
         {
             Console.Clear();
@@ -141,14 +164,12 @@ namespace GameConsole_JasmeetGoraya
 
             bool keepPlaying = true;
 
-
             while (keepPlaying)
             {
                 char currentPlayer = 'X';
                 string[,] board = Create_Board();
-
-
                 bool gameOver = false;
+
                 while (!gameOver)
                 {
                     Console.Clear();
@@ -159,71 +180,54 @@ namespace GameConsole_JasmeetGoraya
                     Console.WriteLine("Player " + currentPlayer + ", enter your move (1-9):");
                     string move = Console.ReadLine() ?? string.Empty;
 
-                    if (Place_Move(board, move, currentPlayer))
-                    {
-                        if (Check_Winner(board, currentPlayer))
-                        {
-                            Console.Clear();
-                            Console.WriteLine("Current board:");
-                            Display_Board(board);
-
-                            Console.WriteLine();
-                            Console.WriteLine("Player " + currentPlayer + " wins!");
-                            Console.WriteLine("Player " + (currentPlayer == 'X' ? 'O' : 'X') + " loses!");
-                            Console.WriteLine("Press Enter to continue...");
-                            Console.ReadLine();
-
-                            PlayAgain();
-                        }
-                        else if (Check_Draw(board))
-                        {
-                            Console.Clear();
-                            Console.WriteLine("Current board:");
-                            Display_Board(board);
-
-                            Console.WriteLine();
-                            Console.WriteLine("It's a draw!");
-                            Console.WriteLine("Press Enter to continue...");
-                            Console.ReadLine();
-
-                            PlayAgain();
-                        }
-
-                        else
-                        {
-                            currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
-                        }
-                    }
-                    else
+                    if (!Place_Move(board, move, currentPlayer))
                     {
                         Console.WriteLine("Invalid move, please try again.");
                         Task.Delay(1000).Wait();
+                        continue;
+                    }
+
+                    if (Check_Winner(board, currentPlayer))
+                    {
+                        Console.Clear();
+                        Console.WriteLine("Current board:");
+                        Display_Board(board);
+
+                        Console.WriteLine();
+                        Console.WriteLine("Player " + currentPlayer + " wins!");
+                        Console.WriteLine("Player " + (currentPlayer == 'X' ? 'O' : 'X') + " loses!");
+                        Console.WriteLine("Press Enter to continue...");
+                        Console.ReadLine();
+
+                        gameOver = true;
+                        keepPlaying = PlayAgain();
+                    }
+                    else if (Check_Draw(board))
+                    {
+                        Console.Clear();
+                        Console.WriteLine("Current board:");
+                        Display_Board(board);
+
+                        Console.WriteLine();
+                        Console.WriteLine("It's a draw!");
+                        Console.WriteLine("Press Enter to continue...");
+                        Console.ReadLine();
+
+                        gameOver = true;
+                        keepPlaying = PlayAgain();
+                    }
+                    else
+                    {
+                        currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
                     }
                 }
             }
+
+            Console.WriteLine("Returning to menu...");
+            Task.Delay(1000).Wait();
         }
 
-        private static void PlayAgain()
-        {
-            Console.WriteLine("Do you want to play again? (y/n)");
-            string input = Console.ReadLine() ?? string.Empty;
-            if (input.ToLower() == "y" || input.ToLower() == "yes")
-            {
-                NaughtsAndCrosses();
-            }
-            else if (input.ToLower() == "n" || input.ToLower() == "no")
-            {
-                Console.WriteLine("Returning to menu...");
-                Task.Delay(1000).Wait();
-            }
-            else
-            {
-                Console.WriteLine("Invalid input, returning to menu...");
-                Task.Delay(1000).Wait();
-            }
-        }
-
-
+       
 
         private static string[,] Create_Board()
         {
