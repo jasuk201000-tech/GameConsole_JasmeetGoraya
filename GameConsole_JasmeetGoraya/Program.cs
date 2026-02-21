@@ -134,13 +134,13 @@ namespace GameConsole_JasmeetGoraya
 
             bool keepPlaying = true;
 
-            string[,] board = Create_Board();
-
 
             while (keepPlaying)
             {
                 char currentPlayer = 'X';
                 string[,] board = Create_Board();
+
+
                 bool gameOver = false;
                 while (!gameOver)
                 {
@@ -159,17 +159,29 @@ namespace GameConsole_JasmeetGoraya
                             Console.Clear();
                             Console.WriteLine("Current board:");
                             Display_Board(board);
+
+                            Console.WriteLine();
                             Console.WriteLine("Player " + currentPlayer + " wins!");
-                            gameOver = true;
+                            Console.WriteLine("Player " + (currentPlayer == 'X' ? 'O' : 'X') + " loses!");
+                            Console.WriteLine("Press Enter to continue...");
+                            Console.ReadLine();
+
+                            PlayAgain();
                         }
                         else if (Check_Draw(board))
                         {
                             Console.Clear();
                             Console.WriteLine("Current board:");
                             Display_Board(board);
+
+                            Console.WriteLine();
                             Console.WriteLine("It's a draw!");
-                            gameOver = true;
+                            Console.WriteLine("Press Enter to continue...");
+                            Console.ReadLine();
+
+                            PlayAgain();
                         }
+
                         else
                         {
                             currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
@@ -184,11 +196,24 @@ namespace GameConsole_JasmeetGoraya
             }
         }
 
-        private static string ReturnToMenu()
+        private static void PlayAgain()
         {
-            Console.WriteLine("Press Enter to return to menu.");
-            Console.ReadLine();
-            return string.Empty;
+            Console.WriteLine("Do you want to play again? (y/n)");
+            string input = Console.ReadLine() ?? string.Empty;
+            if (input.ToLower() == "y" || input.ToLower() == "yes")
+            {
+                NaughtsAndCrosses();
+            }
+            else if (input.ToLower() == "n" || input.ToLower() == "no")
+            {
+                Console.WriteLine("Returning to menu...");
+                Task.Delay(1000).Wait();
+            }
+            else
+            {
+                Console.WriteLine("Invalid input, returning to menu...");
+                Task.Delay(1000).Wait();
+            }
         }
 
 
