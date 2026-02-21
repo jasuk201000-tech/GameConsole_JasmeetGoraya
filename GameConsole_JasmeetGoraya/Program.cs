@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 
 namespace GameConsole_JasmeetGoraya
@@ -83,7 +85,9 @@ namespace GameConsole_JasmeetGoraya
             int ties = 0;
             bool playAgain = true;
 
-            Random rng = new Random();
+            
+
+        Random rng = new Random();
 
         
             int computerChoice = rng.Next(1, 4);
@@ -101,6 +105,7 @@ namespace GameConsole_JasmeetGoraya
                 if (computerChoice == rock) { Console.WriteLine("The computer chose rock, it's a tie!"); ties++; }
                 else if (computerChoice == paper) { Console.WriteLine("The computer chose paper, you lose!"); computerWin++; }
                 else { Console.WriteLine("The computer chose scissors, you win!"); playerWin++; }
+                PlayAgain();
             }
             else if (userInput == "2" || userInput.ToLower() == "two")
             {
@@ -108,6 +113,7 @@ namespace GameConsole_JasmeetGoraya
                 if (computerChoice == rock) { Console.WriteLine("The computer chose rock, you win!"); playerWin++; }
                 else if (computerChoice == paper) { Console.WriteLine("The computer chose paper, it's a tie!"); ties++; }
                 else { Console.WriteLine("The computer chose scissors, you lose!"); computerWin++; }
+                PlayAgain();
             }
             else if (userInput == "3" || userInput.ToLower() == "three")
             {
@@ -115,6 +121,7 @@ namespace GameConsole_JasmeetGoraya
                 if (computerChoice == rock) { Console.WriteLine("The computer chose rock, you lose!"); computerWin++; }
                 else if (computerChoice == paper) { Console.WriteLine("The computer chose paper, you win!"); playerWin++; }
                 else { Console.WriteLine("The computer chose scissors, it's a tie!"); ties++; }
+                PlayAgain();
             }
             else
             {
