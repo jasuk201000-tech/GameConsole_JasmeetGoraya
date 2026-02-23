@@ -5,9 +5,17 @@ namespace GameConsole_JasmeetGoraya
 {
     class Program
     {
-        // main menu for the game console, allows the user to choose which game they want to play and also allows them to exit the game console
+        // admin users have access to all features, including future admin tools
+        enum UserRole
+        {
+            Admin,
+            Guest
+        }
+
         static void Main(string[] args)
         {
+            UserRole role = RequireLogin();
+
             bool isRunning = true;
 
             while (isRunning)
@@ -15,58 +23,158 @@ namespace GameConsole_JasmeetGoraya
                 Console.Clear();
 
                 Console.WriteLine("----- game console -----");
+                Console.WriteLine("Logged in as: " + role);
                 Task.Delay(500).Wait();
+
                 Console.WriteLine("Press one to play rock paper scissors");
                 Task.Delay(500).Wait();
                 Console.WriteLine("Press two to play naughts and crosses");
-                Task.Delay(500).Wait();
-                Console.WriteLine("Press three to return back to home screen");
+
+                if (role == UserRole.Admin)
+                {
+                    Task.Delay(500).Wait();
+                    Console.WriteLine("Press three to access admin tools (future feature)");
+                }
+
                 Task.Delay(500).Wait();
                 Console.WriteLine("Press four to exit the game console");
 
-                string userInput = (Console.ReadLine() ?? string.Empty).Trim().ToLower();
+                string userInput = (Console.ReadLine() ?? "").Trim().ToLower();
 
                 switch (userInput)
                 {
                     case "1":
                     case "one":
-                        Console.WriteLine("You have chosen to play rock paper scissors");
-                        Task.Delay(1000).Wait();
                         Play.Rps();
                         break;
 
                     case "2":
                     case "two":
-                        Console.WriteLine("You have chosen to play naughts and crosses");
-                        Task.Delay(1000).Wait();
                         Play.NaughtsAndCrosses();
                         break;
 
                     case "3":
                     case "three":
-                        Console.WriteLine("Returning back to home screen...");
-                        Task.Delay(1000).Wait();
+                        if (role == UserRole.Admin)
+                        {
+                            Console.WriteLine("Admin tools coming soon...");
+                            Task.Delay(1000).Wait();
+                        }
+                        else
+                        {
+                            Console.WriteLine("Guest users don't have access to admin tools.");
+                            Task.Delay(1200).Wait();
+                        }
                         break;
 
                     case "4":
                     case "four":
-                        Console.WriteLine("Exiting the game console...");
-                        Task.Delay(1000).Wait();
                         isRunning = false;
                         break;
 
                     default:
-                        Console.WriteLine("Invalid input, please try again.");
+                        Console.WriteLine("Invalid input.");
                         Task.Delay(1000).Wait();
                         break;
                 }
             }
         }
+
+        private static UserRole RequireLogin()
+        {
+            const string correctUser = "admin";
+            const string correctPass = "1234";
+
+            while (true)
+            {
+                Console.Clear();
+                Console.WriteLine("----- login -----");
+                Console.WriteLine("1. Login as Admin");
+                Console.WriteLine("2. Continue as Guest");
+                Console.Write("Choose option: ");
+
+                string choice = (Console.ReadLine() ?? "").Trim().ToLower();
+
+                if (choice == "2" || choice == "two" || choice == "guest")
+                {
+                    Console.WriteLine("Continuing as Guest...");
+                    Task.Delay(800).Wait();
+                    return UserRole.Guest;
+                }
+
+                if (choice == "1" || choice == "one" || choice == "admin")
+                {
+                    int attemptsLeft = 3;
+
+                    while (attemptsLeft > 0)
+                    {
+                        Console.Clear();
+                        Console.WriteLine("----- admin login -----");
+
+                        Console.Write("Username: ");
+                        string username = (Console.ReadLine() ?? "").Trim();
+
+                        Console.Write("Password: ");
+                        string password = ReadPassword();
+
+                        if (username == correctUser && password == correctPass)
+                        {
+                            Console.WriteLine("\nLogin successful!");
+                            Task.Delay(800).Wait();
+                            return UserRole.Admin;
+                        }
+
+                        attemptsLeft--;
+                        Console.WriteLine($"\nWrong login. Attempts left: {attemptsLeft}");
+                        Task.Delay(1200).Wait();
+                    }
+
+                    Console.WriteLine("Too many failed attempts. Returning to login menu...");
+                    Task.Delay(1200).Wait();
+                    continue;
+                }
+
+                Console.WriteLine("Invalid option. Try again.");
+                Task.Delay(1000).Wait();
+            }
+        }
+
+        // Hides password typing (shows * instead)
+        private static string ReadPassword()
+        {
+            string pass = "";
+            ConsoleKeyInfo key;
+
+            while (true)
+            {
+                key = Console.ReadKey(intercept: true);
+
+                if (key.Key == ConsoleKey.Enter)
+                    break;
+
+                if (key.Key == ConsoleKey.Backspace)
+                {
+                    if (pass.Length > 0)
+                    {
+                        pass = pass[..^1];
+                        Console.Write("\b \b");
+                    }
+                    continue;
+                }
+
+                if (char.IsControl(key.KeyChar))
+                    continue;
+
+                pass += key.KeyChar;
+                Console.Write("*");
+            }
+
+            return pass;
+        }
     }
 
     class Play
     {
-        
         private static bool PlayAgain()
         {
             while (true)
@@ -81,13 +189,12 @@ namespace GameConsole_JasmeetGoraya
             }
         }
 
-        
         public static void Rps()
         {
             Console.Clear();
             Console.WriteLine("Welcome to rock paper scissors!");
 
-            Console.WriteLine("Please enter your name:");
+            Console.Write("Please enter your name: ");
             string playerName = Console.ReadLine() ?? string.Empty;
 
             int computerWin = 0;
@@ -155,7 +262,6 @@ namespace GameConsole_JasmeetGoraya
             Task.Delay(1000).Wait();
         }
 
-        
         public static void NaughtsAndCrosses()
         {
             Console.Clear();
@@ -226,8 +332,6 @@ namespace GameConsole_JasmeetGoraya
             Console.WriteLine("Returning to menu...");
             Task.Delay(1000).Wait();
         }
-
-       
 
         private static string[,] Create_Board()
         {
