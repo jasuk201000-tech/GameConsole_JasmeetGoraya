@@ -8,7 +8,7 @@ namespace GameConsole_JasmeetGoraya
         enum UserRole { Admin, User, Guest }
 
         // hardcoded admin and user log ins
-        static Dictionary<string, string> users = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        static Dictionary<string, string> users = new Dictionary<string, string>()
         {
             { "admin", "1234" },
             { "jassi", "password" },
@@ -16,7 +16,7 @@ namespace GameConsole_JasmeetGoraya
         };
 
         // defining which of those log ins are admins (can be used for future admin tools)
-        static HashSet<string> admins = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        static HashSet<string> admins = new HashSet<string>()
         {
             "admin"
         };
@@ -120,6 +120,7 @@ namespace GameConsole_JasmeetGoraya
             Console.Clear();
             Console.WriteLine("----- create account -----");
 
+            Console.WriteLine("Before proceeding, remember that both the username and password must be over 3 characters");
             Console.Write("New username: ");
             string username = (Console.ReadLine() ?? "").Trim();
 
@@ -144,6 +145,20 @@ namespace GameConsole_JasmeetGoraya
             Console.Write("Confirm password: ");
             string confirm = (Console.ReadLine() ?? "").Trim();
             ReadPassword();
+
+            if (password.Length < 4)
+            {
+                Console.WriteLine("Password must be at least 4 chars. Press Enter...");
+                Console.ReadLine();
+                return;
+            }
+
+            if (password.Contains (" "))
+            {
+                Console.WriteLine("Password cannot contain spaces. Press Enter...");
+                Console.ReadLine();
+                return;
+            }
 
             if (password != confirm)
             {
@@ -185,6 +200,8 @@ namespace GameConsole_JasmeetGoraya
             }
 
             // Return null role when login fails after all attempts
+            Console.WriteLine("Too many failed attempts. Returning to menu...");
+            Task.Delay(2000).Wait();
             return (null, string.Empty);
         }
         
