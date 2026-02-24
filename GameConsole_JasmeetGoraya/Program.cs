@@ -1,47 +1,48 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Net.Security;
 using System.Threading.Tasks;
 
 namespace GameConsole_JasmeetGoraya
 {
     class Program
     {
-        // admin users have access to all features, including future admin tools
-        enum UserRole
+        enum UserRole { Admin, User, Guest }
+
+        // hardcoded admin and user log ins
+        static Dictionary<string, string> users = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
-            Admin,
-            Guest
-        }
+            { "admin", "1234" },
+            { "jassi", "password" },
+            { "mr feng", "letmein" }
+        };
+
+        // defining which of those log ins are admins (can be used for future admin tools)
+        static HashSet<string> admins = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            "admin"
+        };
 
         static void Main(string[] args)
         {
-            UserRole role = RequireLogin();
+            var (role, username) = AuthMenu();
 
             bool isRunning = true;
-
             while (isRunning)
             {
                 Console.Clear();
-
                 Console.WriteLine("----- game console -----");
-                Console.WriteLine("Logged in as: " + role);
-                Task.Delay(500).Wait();
+                Console.WriteLine($"Logged in as: " + username);
+                Task.Delay(300).Wait();
 
-                Console.WriteLine("Press one to play rock paper scissors");
-                Task.Delay(500).Wait();
-                Console.WriteLine("Press two to play naughts and crosses");
+                Console.WriteLine("1) Rock Paper Scissors");
+                Console.WriteLine("2) Naughts and Crosses");
+                if (role == UserRole.Admin) Console.WriteLine("3) Admin tools (future)");
+                Console.WriteLine("4) Exit");
 
-                if (role == UserRole.Admin)
-                {
-                    Task.Delay(500).Wait();
-                    Console.WriteLine("Press three to access admin tools (future feature)");
-                }
+                string input = (Console.ReadLine() ?? "").Trim().ToLower();
 
-                Task.Delay(500).Wait();
-                Console.WriteLine("Press four to exit the game console");
-
-                string userInput = (Console.ReadLine() ?? "").Trim().ToLower();
-
-                switch (userInput)
+                switch (input)
                 {
                     case "1":
                     case "one":
@@ -58,13 +59,12 @@ namespace GameConsole_JasmeetGoraya
                         if (role == UserRole.Admin)
                         {
                             Console.WriteLine("Admin tools coming soon...");
-                            Task.Delay(1000).Wait();
                         }
                         else
                         {
-                            Console.WriteLine("Guest users don't have access to admin tools.");
-                            Task.Delay(1200).Wait();
+                            Console.WriteLine("Only admin can access this.");
                         }
+                        Task.Delay(1000).Wait();
                         break;
 
                     case "4":
@@ -74,104 +74,155 @@ namespace GameConsole_JasmeetGoraya
 
                     default:
                         Console.WriteLine("Invalid input.");
-                        Task.Delay(1000).Wait();
+                        Task.Delay(800).Wait();
                         break;
                 }
             }
         }
 
-        private static UserRole RequireLogin()
+        // Main auth menu (simple)
+        static (UserRole role, string username) AuthMenu()
         {
-            const string correctUser = "admin";
-            const string correctPass = "1234";
-
             while (true)
             {
                 Console.Clear();
-                Console.WriteLine("----- login -----");
-                Console.WriteLine("1. Login as Admin");
-                Console.WriteLine("2. Continue as Guest");
-                Console.Write("Choose option: ");
+                Console.WriteLine("----- authentication -----");
+                Console.WriteLine("1) Login");
+                Console.WriteLine("2) Create account");
+                Console.WriteLine("3) Continue as guest");
+                Console.Write("Choose: ");
 
                 string choice = (Console.ReadLine() ?? "").Trim().ToLower();
 
-                if (choice == "2" || choice == "two" || choice == "guest")
+                if (choice == "3" || choice == "guest")
+                    return (UserRole.Guest, "Guest");
+
+                if (choice == "2" || choice == "create")
                 {
-                    Console.WriteLine("Continuing as Guest...");
-                    Task.Delay(800).Wait();
-                    return UserRole.Guest;
+                    CreateAccount();
+                    continue; // back to auth menu
                 }
 
-                if (choice == "1" || choice == "one" || choice == "admin")
+                if (choice == "1" || choice == "login")
                 {
-                    int attemptsLeft = 3;
-
-                    while (attemptsLeft > 0)
-                    {
-                        Console.Clear();
-                        Console.WriteLine("----- admin login -----");
-
-                        Console.Write("Username: ");
-                        string username = (Console.ReadLine() ?? "").Trim();
-
-                        Console.Write("Password: ");
-                        string password = ReadPassword();
-
-                        if (username == correctUser && password == correctPass)
-                        {
-                            Console.WriteLine("\nLogin successful!");
-                            Task.Delay(800).Wait();
-                            return UserRole.Admin;
-                        }
-
-                        attemptsLeft--;
-                        Console.WriteLine($"\nWrong login. Attempts left: {attemptsLeft}");
-                        Task.Delay(1200).Wait();
-                    }
-
-                    Console.WriteLine("Too many failed attempts. Returning to login menu...");
-                    Task.Delay(1200).Wait();
+                    var result = Login();
+                    if (result.role != null) return (result.role.Value, result.username);
+                    Console.WriteLine("Login failed. Press Enter...");
+                    Console.ReadLine();
                     continue;
                 }
 
-                Console.WriteLine("Invalid option. Try again.");
-                Task.Delay(1000).Wait();
+                Console.WriteLine("Invalid option. Press Enter...");
+                Console.ReadLine();
             }
         }
 
-        // Hides password typing (shows * instead)
-        private static string ReadPassword()
+        static void CreateAccount()
         {
-            string pass = "";
-            ConsoleKeyInfo key;
+            Console.Clear();
+            Console.WriteLine("----- create account -----");
 
-            while (true)
+            Console.Write("New username: ");
+            string username = (Console.ReadLine() ?? "").Trim();
+
+            if (username.Length < 3)
             {
-                key = Console.ReadKey(intercept: true);
-
-                if (key.Key == ConsoleKey.Enter)
-                    break;
-
-                if (key.Key == ConsoleKey.Backspace)
-                {
-                    if (pass.Length > 0)
-                    {
-                        pass = pass[..^1];
-                        Console.Write("\b \b");
-                    }
-                    continue;
-                }
-
-                if (char.IsControl(key.KeyChar))
-                    continue;
-
-                pass += key.KeyChar;
-                Console.Write("*");
+                Console.WriteLine("Username must be at least 3 chars. Press Enter...");
+                Console.ReadLine();
+                return;
             }
 
-            return pass;
+            if (users.ContainsKey(username))
+            {
+                Console.WriteLine("That username already exists. Press Enter...");
+                Console.ReadLine();
+                return;
+            }
+
+            Console.Write("New password: ");
+            string password = (Console.ReadLine() ?? "").Trim();
+            ReadPassword();
+
+            Console.Write("Confirm password: ");
+            string confirm = (Console.ReadLine() ?? "").Trim();
+            ReadPassword();
+
+            if (password != confirm)
+            {
+                Console.WriteLine("Passwords don't match. Press Enter...");
+                Console.ReadLine();
+                return;
+            }
+
+            users[username] = password; // save in memory
+            Console.WriteLine("Account created! Press Enter...");
+            Console.ReadLine();
         }
-    }
+
+        static (UserRole? role, string username) Login()
+        {
+            int attempts = 3;
+
+            while (attempts > 0)
+            {
+                Console.Clear();
+                Console.WriteLine("----- login -----");
+
+                Console.Write("Username: ");
+                string username = (Console.ReadLine() ?? "").Trim();
+
+                Console.Write("Password: ");
+                string password = ReadPassword();
+                Console.WriteLine();
+
+                if (users.TryGetValue(username, out string storedPass) && storedPass == password)
+                {
+                    UserRole role = admins.Contains(username) ? UserRole.Admin : UserRole.User;
+                    return (role, username);
+                }
+
+                attempts--;
+                Console.WriteLine($"Wrong login. Attempts left: {attempts}");
+                Task.Delay(900).Wait();
+            }
+
+            // Return null role when login fails after all attempts
+            return (null, string.Empty);
+        }
+        
+            // Hides password typing (shows * instead)
+            private static string ReadPassword()
+            {
+                string pass = "";
+                ConsoleKeyInfo key;
+
+                while (true)
+                {
+                    key = Console.ReadKey(intercept: true);
+
+                    if (key.Key == ConsoleKey.Enter)
+                        break;
+
+                    if (key.Key == ConsoleKey.Backspace)
+                    {
+                        if (pass.Length > 0)
+                        {
+                            pass = pass[..^1];
+                            Console.Write("\b \b");
+                        }
+                        continue;
+                    }
+
+                    if (char.IsControl(key.KeyChar))
+                        continue;
+
+                    pass += key.KeyChar;
+                    Console.Write("*");
+                }
+
+                return pass;
+            }
+}
 
     class Play
     {
@@ -193,8 +244,11 @@ namespace GameConsole_JasmeetGoraya
         {
             Console.Clear();
             Console.WriteLine("Welcome to rock paper scissors!");
+            Console.WriteLine("Please enter your name:");
+            string username = Console.ReadLine() ?? string.Empty;  
 
-            Console.Write("Please enter your name: ");
+
+
             string playerName = Console.ReadLine() ?? string.Empty;
 
             int computerWin = 0;
