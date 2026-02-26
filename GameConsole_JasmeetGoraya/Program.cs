@@ -295,6 +295,7 @@ namespace GameConsole_JasmeetGoraya
 
                 string userInput = (Console.ReadLine() ?? string.Empty).Trim().ToLower();
 
+                // decision logic
                 int playerChoice;
                 if (userInput == "1" || userInput == "one") playerChoice = 1;
                 else if (userInput == "2" || userInput == "two") playerChoice = 2;
@@ -328,6 +329,7 @@ namespace GameConsole_JasmeetGoraya
 
         public static void NaughtsAndCrosses()
         {
+            // naughts and crosses game
             Console.Clear();
             Console.WriteLine("welcome to naughts and crosses");
             Task.Delay(500).Wait();
@@ -336,12 +338,14 @@ namespace GameConsole_JasmeetGoraya
 
             while (keepPlaying)
             {
+                // keeping track of current player and game board
                 char currentPlayer = 'X';
                 string[,] board = Create_Board();
                 bool gameOver = false;
 
                 while (!gameOver)
                 {
+                    // main loop
                     Console.Clear();
                     Console.WriteLine("Current board:");
                     Display_Board(board);
@@ -352,6 +356,7 @@ namespace GameConsole_JasmeetGoraya
 
                     if (!Place_Move(board, move, currentPlayer))
                     {
+                        //invalidation of move
                         Console.WriteLine("Invalid move, please try again.");
                         Task.Delay(1000).Wait();
                         continue;
@@ -359,6 +364,7 @@ namespace GameConsole_JasmeetGoraya
 
                     if (Check_Winner(board, currentPlayer))
                     {
+                        // check win function
                         Console.Clear();
                         Console.WriteLine("Current board:");
                         Display_Board(board);
@@ -399,6 +405,7 @@ namespace GameConsole_JasmeetGoraya
 
         private static string[,] Create_Board()
         {
+            // seperating the board into its own function for easy updates and readability
             return new string[,]
             {
                 { "1", "2", "3" },
@@ -408,6 +415,7 @@ namespace GameConsole_JasmeetGoraya
         }
 
         private static void Display_Board(string[,] board)
+            // creating board with array
         {
             Console.WriteLine(board[0, 0] + " | " + board[0, 1] + " | " + board[0, 2]);
             Console.WriteLine("--+---+--");
@@ -418,6 +426,7 @@ namespace GameConsole_JasmeetGoraya
 
         private static bool Place_Move(string[,] board, string move, char currentPlayer)
         {
+            // validating moves using simple arithmetic
             if (!int.TryParse(move, out int pos)) return false;
             if (pos < 1 || pos > 9) return false;
 
@@ -426,12 +435,14 @@ namespace GameConsole_JasmeetGoraya
 
             if (board[row, col] == "X" || board[row, col] == "O") return false;
 
+            // switching the move to current player's symbol
             board[row, col] = currentPlayer.ToString();
             return true;
         }
 
         private static bool Check_Winner(string[,] board, char player)
         {
+            // checking win combinations- generalised w/o hardcoding
             string p = player.ToString();
 
             for (int r = 0; r < 3; r++)
@@ -448,6 +459,7 @@ namespace GameConsole_JasmeetGoraya
 
         private static bool Check_Draw(string[,] board)
         {
+            // checking when the game is a draw or if there are no moves left
             for (int r = 0; r < 3; r++)
                 for (int c = 0; c < 3; c++)
                     if (board[r, c] != "X" && board[r, c] != "O")
