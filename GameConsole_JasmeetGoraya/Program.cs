@@ -1,36 +1,41 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace GameConsole_JasmeetGoraya
 {
+    // simple console game with authentication feature and games
     class Program
     {
+        // different user roles -> impacts access control
         enum UserRole { Admin, User, Guest }
 
-        // hardcoded admin and user log ins
         static Dictionary<string, string> users = new Dictionary<string, string>()
         {
+            // hard-coded example log ins
             { "admin", "1234" },
             { "jassi", "password" },
             { "mr feng", "letmein" }
         };
 
-        // defining which of those log ins are admins (can be used for future admin tools)
         static HashSet<string> admins = new HashSet<string>()
         {
+            // ensuring that admin has access to admin tools
             "admin"
         };
 
         static void Main(string[] args)
         {
+            // authentication menu returns the role and username of the logged in user
             var (role, username) = AuthMenu();
 
             bool isRunning = true;
             while (isRunning)
             {
+                // main menu - depending on user type options will differ
                 Console.Clear();
                 Console.WriteLine("----- game console -----");
-                Console.WriteLine($"Logged in as: " + username);
+                Console.WriteLine("Logged in as: " + username);
                 Task.Delay(300).Wait();
 
                 Console.WriteLine("1) Rock Paper Scissors");
@@ -42,6 +47,7 @@ namespace GameConsole_JasmeetGoraya
 
                 switch (input)
                 {
+                    // case based decision making- allowing for flexible input and less case sensitive errors
                     case "1":
                     case "one":
                         Play.Rps();
@@ -55,19 +61,18 @@ namespace GameConsole_JasmeetGoraya
                     case "3":
                     case "three":
                         if (role == UserRole.Admin)
-                        {
                             Console.WriteLine("Admin tools coming soon...");
-                        }
                         else
-                        {
                             Console.WriteLine("Only admin can access this.");
-                        }
                         Task.Delay(1000).Wait();
                         break;
 
                     case "4":
                     case "four":
                         isRunning = false;
+                        Console.WriteLine("Exiting... please press enter");
+                        Task.Delay(800).Wait();
+                        Console.ReadLine();
                         break;
 
                     default:
@@ -78,11 +83,11 @@ namespace GameConsole_JasmeetGoraya
             }
         }
 
-        // Main auth menu (simple)
         static (UserRole role, string username) AuthMenu()
         {
             while (true)
             {
+                // authentication menu
                 Console.Clear();
                 Console.WriteLine("----- authentication -----");
                 Console.WriteLine("1) Login");
@@ -98,13 +103,15 @@ namespace GameConsole_JasmeetGoraya
                 if (choice == "2" || choice == "create")
                 {
                     CreateAccount();
-                    continue; // back to auth menu
+                    continue;
                 }
 
                 if (choice == "1" || choice == "login")
                 {
+                    // when the log in is invalid or incorrect, the user is prompted to keep attempting or exit
                     var result = Login();
                     if (result.role != null) return (result.role.Value, result.username);
+
                     Console.WriteLine("Login failed. Press Enter...");
                     Console.ReadLine();
                     continue;
@@ -117,6 +124,7 @@ namespace GameConsole_JasmeetGoraya
 
         static void CreateAccount()
         {
+            // main create account dialouge
             Console.Clear();
             Console.WriteLine("----- create account -----");
 
@@ -124,6 +132,7 @@ namespace GameConsole_JasmeetGoraya
             Console.Write("New username: ");
             string username = (Console.ReadLine() ?? "").Trim();
 
+            // if then statements, creating conditions for username and password - similar to modern day solutions
             if (username.Length < 3)
             {
                 Console.WriteLine("Username must be at least 3 chars. Press Enter...");
@@ -133,18 +142,19 @@ namespace GameConsole_JasmeetGoraya
 
             if (users.ContainsKey(username))
             {
+                // ensuring that the username is not already in dictionary - preventing duplicates
                 Console.WriteLine("That username already exists. Press Enter...");
                 Console.ReadLine();
                 return;
             }
 
             Console.Write("New password: ");
-            string password = (Console.ReadLine() ?? "").Trim();
-            ReadPassword();
+            string password = ReadPassword();
+            Console.WriteLine();
 
             Console.Write("Confirm password: ");
-            string confirm = (Console.ReadLine() ?? "").Trim();
-            ReadPassword();
+            string confirm = ReadPassword();
+            Console.WriteLine();
 
             if (password.Length < 4)
             {
@@ -153,7 +163,7 @@ namespace GameConsole_JasmeetGoraya
                 return;
             }
 
-            if (password.Contains (" "))
+            if (password.Contains(" "))
             {
                 Console.WriteLine("Password cannot contain spaces. Press Enter...");
                 Console.ReadLine();
@@ -167,7 +177,7 @@ namespace GameConsole_JasmeetGoraya
                 return;
             }
 
-            users[username] = password; // save in memory
+            users[username] = password;
             Console.WriteLine("Account created! Press Enter...");
             Console.ReadLine();
         }
@@ -199,52 +209,52 @@ namespace GameConsole_JasmeetGoraya
                 Task.Delay(900).Wait();
             }
 
-            // Return null role when login fails after all attempts
             Console.WriteLine("Too many failed attempts. Returning to menu...");
             Task.Delay(2000).Wait();
             return (null, string.Empty);
         }
-        
-            // Hides password typing (shows * instead)
-            private static string ReadPassword()
+
+        private static string ReadPassword()
+        {
+            string pass = "";
+            ConsoleKeyInfo key;
+
+            while (true)
             {
-                string pass = "";
-                ConsoleKeyInfo key;
+                key = Console.ReadKey(intercept: true);
 
-                while (true)
+                if (key.Key == ConsoleKey.Enter)
+                    break;
+
+                if (key.Key == ConsoleKey.Backspace)
                 {
-                    key = Console.ReadKey(intercept: true);
-
-                    if (key.Key == ConsoleKey.Enter)
-                        break;
-
-                    if (key.Key == ConsoleKey.Backspace)
+                    if (pass.Length > 0)
                     {
-                        if (pass.Length > 0)
-                        {
-                            pass = pass[..^1];
-                            Console.Write("\b \b");
-                        }
-                        continue;
+                        pass = pass[..^1]; // C# 8+
+                        Console.Write("\b \b");
                     }
-
-                    if (char.IsControl(key.KeyChar))
-                        continue;
-
-                    pass += key.KeyChar;
-                    Console.Write("*");
+                    continue;
                 }
 
-                return pass;
+                if (char.IsControl(key.KeyChar))
+                    continue;
+
+                pass += key.KeyChar;
+                Console.Write("*");
             }
-}
+
+            return pass;
+        }
+    }
 
     class Play
     {
+        // play class is where all the games are stored - each stored in its respective static bool
         private static bool PlayAgain()
         {
             while (true)
             {
+                // asking user after each round if they'd like to play again
                 Console.Write("Do you want to play again? (y/n): ");
                 string input = (Console.ReadLine() ?? "").Trim().ToLower();
 
@@ -257,29 +267,26 @@ namespace GameConsole_JasmeetGoraya
 
         public static void Rps()
         {
+            // rock paper scissors game
             Console.Clear();
             Console.WriteLine("Welcome to rock paper scissors!");
-            Console.WriteLine("Please enter your name:");
-            string username = Console.ReadLine() ?? string.Empty;  
-
-
-
+            Console.Write("Please enter your name: ");
             string playerName = Console.ReadLine() ?? string.Empty;
 
+            //
             int computerWin = 0;
             int playerWin = 0;
             int ties = 0;
-
             Random rng = new Random();
 
             bool keepPlaying = true;
             while (keepPlaying)
             {
+                // main game loop dialouge
                 Console.Clear();
                 Console.WriteLine($"Player: {playerName}");
                 Console.WriteLine($"Score -> Computer: {computerWin}  You: {playerWin}  Ties: {ties}");
                 Console.WriteLine();
-                Console.WriteLine("Please enter any of the following:");
                 Console.WriteLine("press one for rock");
                 Console.WriteLine("press two for paper");
                 Console.WriteLine("press three for scissors");
@@ -303,25 +310,13 @@ namespace GameConsole_JasmeetGoraya
                 Console.WriteLine("You chose " + (playerChoice == 1 ? "rock" : playerChoice == 2 ? "paper" : "scissors"));
                 Console.WriteLine("Computer chose " + (computerChoice == 1 ? "rock" : computerChoice == 2 ? "paper" : "scissors"));
 
-                if (playerChoice == computerChoice)
-                {
-                    Console.WriteLine("It's a tie!");
-                    ties++;
-                }
-                else if (
-                    (playerChoice == 1 && computerChoice == 3) ||
-                    (playerChoice == 2 && computerChoice == 1) ||
-                    (playerChoice == 3 && computerChoice == 2)
-                )
-                {
-                    Console.WriteLine("You win!");
-                    playerWin++;
-                }
+                if (playerChoice == computerChoice) { Console.WriteLine("It's a tie!"); ties++; }
+                else if ((playerChoice == 1 && computerChoice == 3) ||
+                         (playerChoice == 2 && computerChoice == 1) ||
+                         (playerChoice == 3 && computerChoice == 2))
+                { Console.WriteLine("You win!"); playerWin++; }
                 else
-                {
-                    Console.WriteLine("You lose!");
-                    computerWin++;
-                }
+                { Console.WriteLine("You lose!"); computerWin++; }
 
                 Console.WriteLine();
                 keepPlaying = PlayAgain();
