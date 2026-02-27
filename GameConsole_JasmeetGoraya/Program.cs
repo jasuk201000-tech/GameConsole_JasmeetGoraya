@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -39,9 +39,13 @@ namespace GameConsole_JasmeetGoraya
                 Task.Delay(300).Wait();
 
                 Console.WriteLine("1) Rock Paper Scissors");
+                Task.Delay(300).Wait();
                 Console.WriteLine("2) Naughts and Crosses");
-                if (role == UserRole.Admin) Console.WriteLine("3) Admin tools (future)");
-                Console.WriteLine("4) Exit");
+                Task.Delay(300).Wait();
+                Console.WriteLine("3) Exit");
+                Task.Delay(300).Wait();
+                if (role == UserRole.Admin) Console.WriteLine("4) Admin Tools");
+                
 
                 string input = (Console.ReadLine() ?? "").Trim().ToLower();
 
@@ -50,31 +54,36 @@ namespace GameConsole_JasmeetGoraya
                     // case based decision making- allowing for flexible input and less case sensitive errors
                     case "1":
                     case "one":
+                    Console.WriteLine("Starting Rock Paper Scissors...");
+                    Task.Delay(800).Wait();
                         Play.Rps();
                         break;
 
                     case "2":
                     case "two":
+                    Console.WriteLine("Starting Naughts and Crosses...");
+                    Task.Delay(800).Wait();
                         Play.NaughtsAndCrosses();
                         break;
 
                     case "3":
                     case "three":
-                        if (role == UserRole.Admin)
-                            Console.WriteLine("Admin tools coming soon...");
-                        else
-                            Console.WriteLine("Only admin can access this.");
-                        Task.Delay(1000).Wait();
-                        break;
-
-                    case "4":
-                    case "four":
-                        isRunning = false;
+                       isRunning = false;
                         Console.WriteLine("Exiting... please press enter");
                         Task.Delay(800).Wait();
                         Console.ReadLine();
                         break;
 
+
+                    case "4":
+                    case "four":
+                     if (role == UserRole.Admin)
+                            Console.WriteLine("Admin tools coming soon...");
+                        else
+                            Console.WriteLine("Only admin can access this.");
+                        Task.Delay(1000).Wait();
+                        break;
+                        
                     default:
                         Console.WriteLine("Invalid input.");
                         Task.Delay(800).Wait();
@@ -230,7 +239,7 @@ namespace GameConsole_JasmeetGoraya
                 {
                     if (pass.Length > 0)
                     {
-                        pass = pass[..^1]; // C# 8+
+                        pass = pass[..^1]; 
                         Console.Write("\b \b");
                     }
                     continue;
